@@ -1,0 +1,5 @@
+company = "Tomasz Zdziech"
+pathtype = "local"
+path = "C:\\Users\\Agron\\Documents\\"
+veeam = "no"
+sql = "yes"
