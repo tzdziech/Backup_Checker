@@ -1,0 +1,6 @@
+company = "Wanzl"
+pathtype = "local"
+veeam = "yes"
+sql = "no"
+vpath = "\\\\172.17.34.221\\Backups\\"
+spath = "\\\\localhost\\"

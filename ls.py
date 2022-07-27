@@ -191,7 +191,8 @@ if __name__ == '__main__':
     def main_folder_execute(toml):      
         
         if toml['sql'] == "yes":
-            print("Szukamy backupow SQL")
+            print("****************************************************")
+            print("Szukamy backupow SQL ", toml['spath'])
             print("Klient", toml['company'])
             print("Data	Wykonujący kontrolę	Status	Rozmiar pliku BAK	Data ostatniego backupu 	Wolne miejsce w repozytorium 	Uwagi")
             dirList = get_directories(toml["spath"])
@@ -199,11 +200,20 @@ if __name__ == '__main__':
                 sub_folder_execute(i, "SQL")
 
         if toml['veeam'] == "yes":
-            print("Szukamy backupow VEEAM")
+            print("****************************************************")
+            print("Szukamy backupow VEEAM ", toml['vpath'])
             dirList = get_directories(toml["vpath"])
             for i in dirList:
                 print("Folder VEEAM: ", i)
                 sub_folder_execute(i, "VEEAM")
+            if toml['vpath2']:
+                print("****************************************************")
+                print("Szukamy backupow VEEAM ", toml['vpath2'])
+                dirList = get_directories(toml["vpath"])
+                for i in dirList:
+                    print("Folder VEEAM: ", i)
+                    sub_folder_execute(i, "VEEAM")
+
 
         #print(dirList)
 
