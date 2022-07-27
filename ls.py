@@ -177,7 +177,7 @@ if __name__ == '__main__':
                 error_message += check_backup_age(file_info["date"])
             elif file2_info: #gdy jest z rozszezeniem przyrostowym
                 print( file2_day, "(", file2_info['file'], "[", file2_info['size'], "]", ")",  end = ";")
-                error_message =+ "Brak plików z backupem pełnym, "
+                error_message += "Brak plików z backupem pełnym, "
                 error_message += check_backup_age(file2_info["date"])
             
             # Wolne miejsce w repozytorium [GB]	
