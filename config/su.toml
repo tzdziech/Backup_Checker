@@ -1,3 +1,6 @@
 company = "Słodkie Upominki"
-path = "\\\\192.168.1.21\\backup"
-type = "veeam"
+pathtype = "network"
+veeam = "yes"
+sql = "yes"
+vpath = "\\\\192.168.1.252\\altaro\\"
+spath = "\\\\192.168.1.252\\backup_wapro\\Dzienny\\"
