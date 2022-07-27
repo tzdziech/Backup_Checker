@@ -1,6 +1,7 @@
 from os import path
 from datetime import datetime
 import glob
+import time
 import numpy as np
 
     #konwersja rozmiaru na jak najwieksze jednostki
@@ -58,7 +59,7 @@ class FileList:
         last_biggest = self.list[2,0]
         number_biggest = False        
         for x in range(len(self.list[0])):
-            if self.list[2,x] > last_biggest and self.list[3,x] == extension:
+            if self.list[2,x] >= last_biggest and self.list[3,x] == extension:
                 last_biggest = self.list[2,x]
                 number_biggest = x
 
@@ -72,12 +73,14 @@ class FileList:
         if len(self.list[0]) == 0:
             #   print("Brak plikow w katalogu - nie mozna znalezc najnowszego")
             return False
-
-        last_newest = self.list[4,0]
+        t0 = (1970, 1, 1, 1, 1, 1, 1, 362, 0)
+        last_newest = time.mktime(t0)
         number_newest = False        
         for x in range(len(self.list[0])):
-            if self.list[4,x] > last_newest and self.list[3,x] == extension:
-                last_newest = self.list[4,x]
+            # print(self.list[4,x],last_newest)
+            # print(type(float(self.list[4,x])), type(last_newest))
+            if float(self.list[4,x]) >= last_newest and self.list[3,x] == extension:
+                last_newest = float(self.list[4,x])
                 number_newest = x
 
         #   print("Najnowszy plik to:", self.list[0,number_newest], self.list[1,number_newest])

@@ -96,7 +96,6 @@ if __name__ == '__main__':
     def sub_folder_execute(path: str, btype: str) -> None:
         #print("-------",path,"-------------------")
         fileList = fl.FileList(path)
-        dupa = 0
         error_message = ""
         #fileList.do_ls()
         if btype == "SQL":
