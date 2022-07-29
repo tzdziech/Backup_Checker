@@ -98,97 +98,100 @@ if __name__ == '__main__':
         return dirList
 
     #przeszukanie folderu podrzednego
-    def sub_folder_execute(path: str, btype: str) -> None:
-        #print_to_maintext("-------",path,"-------------------")
+    def sub_folder_execute_sql(path: str) -> None:
+
         fileList = fl.FileList(path)
         error_message = ""
-        #fileList.do_ls()
-        if btype == "SQL":
-            # Data	
-            day = date.today()
-            print_to_maintext(f"%s	" % day.strftime("%d.%m.%Y"))
-            #Wykonujący kontrolę	
-            print_to_maintext("Tomasz Zdziech	")
-            #Status	
-            print_to_maintext("ok	")
-            #Rozmiar pliku BAK (nazwa)	oraz Data ostatniego backupu
-            file_info = fileList.find_newest(sqlExtension)            
-            if file_info :
-                file_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file_info['date'])))
-                print_to_maintext(f"{file_info['size']} (\'{file_info['file']}\')	{file_day}	")
+        
+        
+        # Data	
+        day = date.today()
+        print_to_maintext(f"%s	" % day.strftime("%d.%m.%Y"))
+        #Wykonujący kontrolę	
+        print_to_maintext("Tomasz Zdziech	")
+        #Status	
+        print_to_maintext("ok	")
+        #Rozmiar pliku BAK (nazwa)	oraz Data ostatniego backupu
+        file_info = fileList.find_newest(sqlExtension)            
+        if file_info :
+            file_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file_info['date'])))
+            print_to_maintext(f"{file_info['size']} (\'{file_info['file']}\')	{file_day}	")
 
-                error_message += check_backup_age(file_info["date"])    
+            error_message += check_backup_age(file_info["date"])    
+        else: error_message = f"brak plików w folderze {path}."
                 
                 
-            #Wolne miejsce w repozytorium 
-            print_to_maintext(f"{get_free_space_string(path)} 	")
+        #Wolne miejsce w repozytorium 
+        print_to_maintext(f"{get_free_space_string(path)} 	")
             
-            #Uwagi
-            print_to_maintext(f"{error_message}", True)
+        #Uwagi
+        print_to_maintext(f"{error_message}", True)
 
-            """
+        """
             Potencjalnie mozna tu sprawdzac:
             - czy nie ma miejsca malo (porownujac do rozmiaru pliku backupu)
             - czy backup nei jest starszy niz ILEŚ dni
             - czy wogole znaleziono PLIKI!!!
 
-            """
-
-        elif btype == "VEEAM":
-            # Data	
-            day = date.today()
-            print_to_maintext(f"%s 	" % day.strftime("%d.%m.%Y"))
+        """
+    def sub_folder_execute_veeam(path: str) -> None:
+        
+        fileList = fl.FileList(path)
+        error_message = ""
+              	
+        day = date.today()
+        print_to_maintext("%s 	" % day.strftime("%d.%m.%Y"))
             
-            # Wykonujący 	
-            print_to_maintext("Tomasz Zdziech	")
+        # Wykonujący 	
+        print_to_maintext("Tomasz Zdziech	")
             
-            # Status	
-            print_to_maintext("ok	")
+        # Status	
+        print_to_maintext("ok	")
             
-            # Oryginalny rozmiar maszyny [TB]
-            print_to_maintext("??? GB	")
+        # Oryginalny rozmiar maszyny [TB]
+        print_to_maintext("??? GB	")
             
-            # Data ostatniego pełnego backupu 	+ Rozmiar backupu [GB]
-            file_info = fileList.find_newest(veeamFullExtension)
-            if file_info: 
-                file_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file_info['date'])))
-                print_to_maintext(f"{file_day}	{file_info['size']} 	")
-                #print_to_maintext(file_day, file_info['size'],"(", file_info['file'],")	",  , True)
+        # Data ostatniego pełnego backupu 	+ Rozmiar backupu [GB]
+        file_info = fileList.find_newest(veeamFullExtension)
+        if file_info: 
+            file_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file_info['date'])))
+            print_to_maintext(f"{file_day}	{file_info['size']} 	")
+            #print_to_maintext(file_day, file_info['size'],"(", file_info['file'],")	",  , True)
             	
-            # Data ostatniego wykonanego backupu	
-            file2_info = fileList.find_newest(veeamExtension)
+        # Data ostatniego wykonanego backupu	
+        file2_info = fileList.find_newest(veeamExtension)
+        if file2_info: file2_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file2_info['date'])))
+        else: 
+            file2_info = fileList.find_newest(veeamIncExtension)
             if file2_info: file2_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file2_info['date'])))
-            else: 
-                file2_info = fileList.find_newest(veeamIncExtension)
-                if file2_info: file2_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file2_info['date'])))
 
-            if not file_info and not file2_info: #gdy nie ma zadnego z rozszezen
-                print_to_maintext("BRAK PLIKOW BACKUPU VEEAM W FOLDERZE", True )
-                error_message += "BRAK PLIKOW BACKUPU VEEAM, "
-            elif file_info and file2_info: #gdy sa pliki z oboma rozszezeniami
-                #porownywanie
-                if file_info["date"] > file2_info["date"]:
-                    print_to_maintext( f"{file_day} ( \'{file_info['file']}\'[{file_info['size']}] )	")
-                    error_message += check_backup_age(file_info["date"])
-                elif file_info["date"] < file2_info["date"]:
-                    print_to_maintext( f"{file2_day} (\'{file2_info['file']}\'[{file2_info['size']}])	")
-                    error_message += check_backup_age(file2_info["date"])
-                else:
-                    pass
-            elif file_info: # gdy jest z rozszezeniem plenym
-                print_to_maintext( f"{file_day} ( \'{file_info['file']}\'[{file_info['size']}])	")
-                error_message += "Brak plików przyrostowych, "
+        if not file_info and not file2_info: #gdy nie ma zadnego z rozszezen
+            print_to_maintext("BRAK PLIKOW BACKUPU VEEAM W FOLDERZE", True )
+            error_message += "BRAK PLIKOW BACKUPU VEEAM, "
+        elif file_info and file2_info: #gdy sa pliki z oboma rozszezeniami
+            #porownywanie
+            if file_info["date"] > file2_info["date"]:
+                print_to_maintext( f"{file_day} ( \'{file_info['file']}\'[{file_info['size']}] )	")
                 error_message += check_backup_age(file_info["date"])
-            elif file2_info: #gdy jest z rozszezeniem przyrostowym
+            elif file_info["date"] < file2_info["date"]:
                 print_to_maintext( f"{file2_day} (\'{file2_info['file']}\'[{file2_info['size']}])	")
-                error_message += "Brak plików z backupem pełnym, "
                 error_message += check_backup_age(file2_info["date"])
+            else:
+                pass
+        elif file_info: # gdy jest z rozszezeniem plenym
+            print_to_maintext( f"{file_day} ( \'{file_info['file']}\'[{file_info['size']}])	")
+            error_message += "Brak plików przyrostowych, "
+            error_message += check_backup_age(file_info["date"])
+        elif file2_info: #gdy jest z rozszezeniem przyrostowym
+            print_to_maintext( f"{file2_day} (\'{file2_info['file']}\'[{file2_info['size']}])	")
+            error_message += "Brak plików z backupem pełnym, "
+            error_message += check_backup_age(file2_info["date"])
             
-            # Wolne miejsce w repozytorium [GB]	
-            print_to_maintext(f"{get_free_space_string(path)}	")
+        # Wolne miejsce w repozytorium [GB]	
+        print_to_maintext(f"{get_free_space_string(path)}	")
 
-            # Uwagi
-            print_to_maintext(error_message, True)
+         # Uwagi
+        print_to_maintext(error_message, True)
         
    
 
@@ -202,22 +205,24 @@ if __name__ == '__main__':
             print_to_maintext("Data	Wykonujący kontrolę	Status	Rozmiar pliku BAK	Data ostatniego backupu 	Wolne miejsce w repozytorium 	Uwagi", True)
             dirList = get_directories(toml["spath"])
             for i in dirList:
-                sub_folder_execute(i, "SQL")
+                sub_folder_execute_sql(i)
 
         if toml['veeam'] == "yes":
             print_to_maintext("****************************************************", True)
             print_to_maintext("Szukamy backupow VEEAM " + toml['vpath'], True)
+            print_to_maintext(f"Klient {toml['company']}", True)
+            print_to_maintext("Data	Wykonujący 	Status	Oryginalny rozmiar maszyny [TB]	Data ostatniego pełnego backupu 	Rozmiar backupu [GB]	Data ostatniego wykonanego backupu	Wolne miejsce w repozytorium [GB]	Uwagi"), True
             dirList = get_directories(toml["vpath"])
             for i in dirList:
                 print_to_maintext("Folder VEEAM: " + i, True)
-                sub_folder_execute(i, "VEEAM")
+                sub_folder_execute_veeam(i)
             if toml['vpath2']:
                 print_to_maintext("****************************************************", True)
                 print_to_maintext("Szukamy backupow VEEAM " + toml['vpath2'], True)
                 dirList = get_directories(toml["vpath2"])
                 for i in dirList:
                     print_to_maintext("Folder VEEAM: " + i, True)
-                    sub_folder_execute(i, "VEEAM")
+                    sub_folder_execute_veeam(i)
 
 
         #print_to_maintext(dirList)
