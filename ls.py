@@ -209,7 +209,7 @@ if __name__ == '__main__':
             if toml['vpath2']:
                 print("****************************************************")
                 print("Szukamy backupow VEEAM ", toml['vpath2'])
-                dirList = get_directories(toml["vpath"])
+                dirList = get_directories(toml["vpath2"])
                 for i in dirList:
                     print("Folder VEEAM: ", i)
                     sub_folder_execute(i, "VEEAM")

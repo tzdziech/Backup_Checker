@@ -1,0 +1,7 @@
+company = "Słodkie Upominki - brakujace veeam"
+pathtype = "network"
+veeam = "yes"
+sql = "no"
+vpath = "\\\\192.168.1.252\\altaro\\4. Beone - Qnap.252\\"
+vpath2 = "\\\\192.168.1.252\\altaro\\5. ITCUBE - Qnap.252\\"
+spath = "\\\\192.168.1.252\\backup_wapro\\Dzienny\\"
