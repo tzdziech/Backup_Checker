@@ -1,5 +1,6 @@
 company = "Tomasz Zdziech"
 pathtype = "local"
-path = "C:\\Users\\Agron\\Documents\\"
-veeam = "no"
+veeam = "yes"
 sql = "yes"
+spath = "C:\\Users\\Agron\\Documents\\"
+vpath = "C:\\Users\\Agron\\Documents\\"
