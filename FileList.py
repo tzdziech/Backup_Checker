@@ -50,6 +50,14 @@ class FileList:
             print("File name:", self.list[0,x],"\t size:", self.list[1,x],"(", self.list[2,x], ") \textension:", self.list[3,x], "\t last modified:", self.list[4,x], "(", datetime.fromtimestamp(float(self.list[4,x])), ")")
         print("Znaleziono:", len(self.list[0]), "pliki")
 
+    def count_number(self, extension):
+        # sourcery skip: remove-unnecessary-cast, simplify-constant-sum, sum-comprehension
+        count = 0
+        for x in range(len(self.list[0])):
+            if self.list[3,x] == extension:
+                count += 1
+        return f"Znaleziono [{count}] plikow backupu [{extension}]."
+
     #zwraca numer pozycji najwiekszego pliku z listy o zadanym rozszezeniu
     def find_biggest(self, extension):
         if len(self.list[0]) == 0:

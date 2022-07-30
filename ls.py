@@ -84,7 +84,7 @@ if __name__ == '__main__':
             free /= 1024.0
             total /= 1024.0
             unit = x
-        return "%3.2f" % free + x + " / " + "%3.2f" % total + x 
+        return free, total, x 
         #moze by tak zwroci jeszcze procent albo ostrzegac gdy miejsce jest mniejsze niz backup???
 
 
@@ -117,12 +117,17 @@ if __name__ == '__main__':
             file_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file_info['date'])))
             print_to_maintext(f"{file_info['size']} (\'{file_info['file']}\')	{file_day}	")
 
+            error_message += fileList.count_number(sqlExtension)
             error_message += check_backup_age(file_info["date"])    
         else: error_message = f"brak plików w folderze {path}."
                 
                 
         #Wolne miejsce w repozytorium 
-        print_to_maintext(f"{get_free_space_string(path)} 	")
+        free, total, unit = get_free_space_string(path)
+        print_to_maintext(f"{free:3.2f} {unit} / {total:3.2f} {unit} 	")
+        if free < total/20:
+            error_message += "Na dysku zostało mniej niż 5% miejsca"
+                    
             
         #Uwagi
         print_to_maintext(f"{error_message}", True)
@@ -188,7 +193,10 @@ if __name__ == '__main__':
             error_message += check_backup_age(file2_info["date"])
             
         # Wolne miejsce w repozytorium [GB]	
-        print_to_maintext(f"{get_free_space_string(path)}	")
+        free, total, unit = get_free_space_string(path)
+        print_to_maintext(f"{free:3.2f} % {unit} / {total:3.2f} {unit} 	")
+        if free < total/20:
+            error_message += "Na dysku zostało mniej niż 5% miejsca"
 
          # Uwagi
         print_to_maintext(error_message, True)
@@ -238,26 +246,26 @@ if __name__ == '__main__':
 
         mainText.delete("1.0", "end")
         main_folder_execute(toml)
-                
-        #print_to_maintext(toml)
-        
-        """
-        mainText.insert(END, toml ) #wypluwa do pola tekstowego
-        mainText.insert(END, '\n')
-        mainText.insert(END, toml['company']+'\n')
-        mainText.insert(END, toml['vpath']+'\n')
-        mainText.insert(END, toml['spath']+'\n')
-        """
+                                  
 
     #inicjacja glownego okna
-    mainWindow.geometry("900x900")
+    #getting screen width and height of display
+    #width = mainWindow.winfo_screenwidth()
+    #height= mainWindow.winfo_screenheight()
+    #setting tkinter window size
+    #mainWindow.geometry("%dx%d" % (width, height-40))
+
+    mainWindow.state('zoomed')
+    
+    #mainWindow.geometry("1920x1000")
+    #mainWindow.attributes('-zoomed', True)
     mainWindow.title("Backup Checker - by Tomasz") 
     mainWindow.config(background="GREY") 
     icon = PhotoImage(file='icon.png')
     mainWindow.iconphoto(True, icon) 
 
     #elementy okna definicje
-    fileListComboBOx = ttk.Combobox(mainWindow, values = glob.glob("config\*.*"))    
+    fileListComboBOx = ttk.Combobox(mainWindow, values = glob.glob("config\*.toml"))    
     fileListComboBOx.set("Wybierz")
     startButton = Button(mainWindow, text="Start", command = start_button)
     mainText = Text(mainWindow, height = 300, width = 300)
@@ -266,16 +274,7 @@ if __name__ == '__main__':
     fileListComboBOx.pack()
     startButton.pack()
     mainText.pack()
-
-   
-
-
-
-    #text_field.insert(END, main_list.find_biggest(".py") )
-    #text_field.insert(END, main_list.find_newest(".py") )
-
-   
-
+ 
     mainWindow.mainloop()
   
   
