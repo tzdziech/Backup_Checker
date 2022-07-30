@@ -34,10 +34,7 @@ if __name__ == '__main__':
     veeamIncExtension = ".vib" # incremental
 
     main_list = fl.FileList("") #jesli folder sieciowy to podwoje backslashe \\\\Desktop-sj7tn1k\\wii\\
-    #print_to_maintext(main_list.list)
-    #main_list.do_ls()
-    #main_list.find_biggest(".py")
-    #main_list.find_newest(".py")
+    
 
     mainWindow = Tk()
 
@@ -90,12 +87,12 @@ if __name__ == '__main__':
 
     #zwraca liste foderow w folderze nadrzednym
     def get_directories(path: str) -> list[str]:
-        dirList = []
+        direList = []
         p=os.listdir(path)
         for i in p:
             if os.path.isdir(path+i):                
-                dirList.append(path+i+"\\")
-        return dirList
+                direList.append(path+i+"\\")
+        return direList
 
     #przeszukanie folderu podrzednego
     def sub_folder_execute_sql(path: str) -> None:
@@ -211,24 +208,24 @@ if __name__ == '__main__':
             print_to_maintext(f"Szukamy backupow SQL {toml['spath']}", True)
             print_to_maintext(f"Klient {toml['company']}", True)
             print_to_maintext("Data	Wykonujący kontrolę	Status	Rozmiar pliku BAK	Data ostatniego backupu 	Wolne miejsce w repozytorium 	Uwagi", True)
-            dirList = get_directories(toml["spath"])
-            for i in dirList:
+            direList = get_directories(toml["spath"])
+            for i in direList:
                 sub_folder_execute_sql(i)
 
         if toml['veeam'] == "yes":
             print_to_maintext("****************************************************", True)
             print_to_maintext("Szukamy backupow VEEAM " + toml['vpath'], True)
             print_to_maintext(f"Klient {toml['company']}", True)
-            print_to_maintext("Data	Wykonujący 	Status	Oryginalny rozmiar maszyny [TB]	Data ostatniego pełnego backupu 	Rozmiar backupu [GB]	Data ostatniego wykonanego backupu	Wolne miejsce w repozytorium [GB]	Uwagi"), True
-            dirList = get_directories(toml["vpath"])
-            for i in dirList:
+            print_to_maintext("Data	Wykonujący 	Status	Oryginalny rozmiar maszyny [TB]	Data ostatniego pełnego backupu 	Rozmiar backupu [GB]	Data ostatniego wykonanego backupu	Wolne miejsce w repozytorium [GB]	Uwagi", True)
+            direList = get_directories(toml["vpath"])
+            for i in direList:
                 print_to_maintext("Folder VEEAM: " + i, True)
                 sub_folder_execute_veeam(i)
             if toml['vpath2']:
                 print_to_maintext("****************************************************", True)
                 print_to_maintext("Szukamy backupow VEEAM " + toml['vpath2'], True)
-                dirList = get_directories(toml["vpath2"])
-                for i in dirList:
+                direList = get_directories(toml["vpath2"])
+                for i in direList:
                     print_to_maintext("Folder VEEAM: " + i, True)
                     sub_folder_execute_veeam(i)
 
@@ -246,6 +243,15 @@ if __name__ == '__main__':
 
         mainText.delete("1.0", "end")
         main_folder_execute(toml)
+
+        fp.close()
+
+        day = datetime.today()
+        logfilepath = f"log\{toml['company']} %s.txt" %day.strftime(" %d.%m.%Y %H.%M.%S")
+        logfile = open(logfilepath, mode="w")
+        logfile.write(mainText.get("1.0", "end"))
+        logfile.close()
+
                                   
 
     #inicjacja glownego okna
