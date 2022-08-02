@@ -28,15 +28,18 @@ Wolne miejsce w repozytorium 	Uwagi
 
 if __name__ == '__main__':
 
+#my global d cons.
     sqlExtension = ".bak"
     veeamExtension = ".vrb" # reverse incremental
     veeamFullExtension = ".vbk" #pelny
     veeamIncExtension = ".vib" # incremental
+    
 
     main_list = fl.FileList("") #jesli folder sieciowy to podwoje backslashe \\\\Desktop-sj7tn1k\\wii\\
     
 
     mainWindow = Tk()
+    vpnCheckButtonValue = IntVar() # VPN check button value
 
     """
         kroki: (ju po wczytaniu pliku konfiguracyjnego)
@@ -252,6 +255,10 @@ if __name__ == '__main__':
         logfile.write(mainText.get("1.0", "end"))
         logfile.close()
 
+    def turnVpnButton():
+        if vpnCheckButtonValue.get(): print("VPN enabled", vpnCheckButtonValue.get())
+        else: print("VPN disabled", vpnCheckButtonValue.get())
+        
                                   
 
     #inicjacja glownego okna
@@ -275,12 +282,15 @@ if __name__ == '__main__':
     fileListComboBOx.set("Choose")
     startButton = Button(mainWindow, text="Start", command = start_button)
     mainText = Text(mainWindow, height = 300, width = 300)
+    vpnCheckButton = Checkbutton(mainWindow, text="Connect to VPN", variable = vpnCheckButtonValue, onvalue = 1, offvalue = 0, command = turnVpnButton)
 
     #elemty okna inicjacja
     fileListComboBOx.pack()
     startButton.pack()
+    vpnCheckButton.pack()
     mainText.pack()
- 
+    
+
     mainWindow.mainloop()
   
   
