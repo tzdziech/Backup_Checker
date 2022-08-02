@@ -1,5 +1,5 @@
 from sys import path
-from tkinter.tix import DirList
+#from tkinter.tix import DirList
 from pip import main
 from tkinter import *
 import FileList as fl
@@ -260,11 +260,11 @@ if __name__ == '__main__':
     #height= mainWindow.winfo_screenheight()
     #setting tkinter window size
     #mainWindow.geometry("%dx%d" % (width, height-40))
-
-    mainWindow.state('zoomed')
-    
     #mainWindow.geometry("1920x1000")
     #mainWindow.attributes('-zoomed', True)
+
+    mainWindow.state('zoomed')
+        
     mainWindow.title("Backup Checker - by Tomasz") 
     mainWindow.config(background="GREY") 
     icon = PhotoImage(file='icon.png')
@@ -272,7 +272,7 @@ if __name__ == '__main__':
 
     #elementy okna definicje
     fileListComboBOx = ttk.Combobox(mainWindow, values = glob.glob("config\*.toml"))    
-    fileListComboBOx.set("Wybierz")
+    fileListComboBOx.set("Choose")
     startButton = Button(mainWindow, text="Start", command = start_button)
     mainText = Text(mainWindow, height = 300, width = 300)
 
