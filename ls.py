@@ -59,6 +59,11 @@ if __name__ == '__main__':
             jesli plki starszy niz dwa dni WARNING!!!
         
         """
+    
+    def turnVpnButton():
+        if vpnCheckButtonValue.get(): print("VPN enabled", vpnCheckButtonValue.get())
+        else: print("VPN disabled", vpnCheckButtonValue.get())
+    
     def print_to_maintext(mstring: str, nl=False):
         mainText.insert(END, mstring)
         if nl: mainText.insert(END, "\n")
@@ -238,16 +243,28 @@ if __name__ == '__main__':
 
 
     def start_button():
-        temp_file = fileListComboBOx.get() #pobiera z widgetu wybrana wartosc
+        tomlFileName = fileListComboBOx.get() #pobiera z widgetu wybrana wartosc
+
+        mainText.delete("1.0", "end") #oczyszczenie okna
         
         #wgranie pliku .toml
-        fp = open(temp_file, mode="rb")
-        toml = tomli.load(fp)
+        tomlFileOpen = open(tomlFileName, mode="rb")
+        toml = tomli.load(tomlFileOpen)
 
-        mainText.delete("1.0", "end")
+        #odpalamy VPN
+        if vpnCheckButtonValue.get():
+            pass 
+            #sprawdzamy czy sie zakonczyl pomyslnie
+            #jaka petla
+        
+
         main_folder_execute(toml)
 
-        fp.close()
+        #zamykamy VPN
+        if vpnCheckButtonValue.get():
+            pass 
+
+        tomlFileOpen.close()
 
         day = datetime.today()
         logfilepath = f"log\{toml['company']} %s.txt" %day.strftime(" %d.%m.%Y %H.%M.%S")
@@ -255,9 +272,6 @@ if __name__ == '__main__':
         logfile.write(mainText.get("1.0", "end"))
         logfile.close()
 
-    def turnVpnButton():
-        if vpnCheckButtonValue.get(): print("VPN enabled", vpnCheckButtonValue.get())
-        else: print("VPN disabled", vpnCheckButtonValue.get())
         
                                   
 
