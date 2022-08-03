@@ -1,4 +1,5 @@
 from sys import path
+from numpy import False_
 #from tkinter.tix import DirList
 from pip import main
 from tkinter import *
@@ -10,8 +11,10 @@ import os
 import shutil
 from datetime import datetime, date
 import time
+import sv_ttk #sun valey tkinter theme
+import subprocess #podproces do polaczenia VPN
 
-"""
+""" 
 Format raportów:
 Veeam B&R
 Data	Wykonujący 	Status	Oryginalny rozmiar maszyny [TB]	
@@ -40,6 +43,7 @@ if __name__ == '__main__':
 
     mainWindow = Tk()
     vpnCheckButtonValue = IntVar() # VPN check button value
+    sv_ttk.set_theme("dark")  # Set light theme
 
     """
         kroki: (ju po wczytaniu pliku konfiguracyjnego)
@@ -59,7 +63,27 @@ if __name__ == '__main__':
             jesli plki starszy niz dwa dni WARNING!!!
         
         """
-    
+    ## analiza logu polaczenia VPN zwraca True jesi wykrje odpowiedni tekst
+    def analyze_vpn_log(file):
+        desiredString = "Initialization Sequence Completed"
+        unnecessaryString = "AUTH: Received control message: AUTH_FAILED"
+        unknownError = "Unknown Error"
+        for line in file:
+            print(line)            
+            if desiredString in line:
+                print("Znaleziono potwierdzenie polaczenia:", line)
+                break
+            elif unnecessaryString in line:
+                print("znaleziono: blad audentykacji:", line)
+                break
+            elif unknownError in line:
+                print("")
+            else:
+                print("nie znaleziono zadnego poszukiwanego komunikatu")
+
+
+        return True
+
     def turnVpnButton():
         if vpnCheckButtonValue.get(): print("VPN enabled", vpnCheckButtonValue.get())
         else: print("VPN disabled", vpnCheckButtonValue.get())
@@ -229,7 +253,7 @@ if __name__ == '__main__':
             for i in direList:
                 print_to_maintext("Folder VEEAM: " + i, True)
                 sub_folder_execute_veeam(i)
-            if toml['vpath2']:
+            if 'vpath2' in toml:
                 print_to_maintext("****************************************************", True)
                 print_to_maintext("Szukamy backupow VEEAM " + toml['vpath2'], True)
                 direList = get_directories(toml["vpath2"])
@@ -251,18 +275,52 @@ if __name__ == '__main__':
         tomlFileOpen = open(tomlFileName, mode="rb")
         toml = tomli.load(tomlFileOpen)
 
+        
         #odpalamy VPN
         if vpnCheckButtonValue.get():
-            pass 
-            #sprawdzamy czy sie zakonczyl pomyslnie
-            #jaka petla
+            #na czas laczenia VPN wylaczyc przycisk START
+            startButton["state"] = "disabled" 
+            
+            #polaczenie VPN
+            openVpnPath = "C:\\Program Files\\OpenVPN\\bin\\openvpn.exe"
+            vpnCompanyName = "morex" #bedzie brane z .toml
+            vpnCompanyFile = f"vpn\{vpnCompanyName}.ovpn"
+            vpnCompanyCred = f"vpn\{vpnCompanyName}.txt"
+            command = [openVpnPath, "--config", vpnCompanyFile, "--auth-user-pass", vpnCompanyCred]
+            with open('vpnlog\output.txt', 'w') as file: proc = subprocess.Popen(command, stdout=file)
+
+            
+            #sprawdzamy czy sie zakonczyl pomyslnie                        
+            print("przed")
+            vpnState = False
+            while not vpnState:
+                print("petla")
+                time.sleep(10)
+                #log z polaczenia VPN
+                file = open('vpnlog\output.txt', 'r')
+                #tu jakies sprawdzanie danych z LOGA
+                # if log == ok: vpnState = True
+                if analyze_vpn_log(file): 
+                    print("POLACZONO!!!!")
+                    vpnState = True                               
+                        
+            print("po")
+            
         
 
-        main_folder_execute(toml)
+        #main_folder_execute(toml)
 
         #zamykamy VPN
         if vpnCheckButtonValue.get():
-            pass 
+        
+            #wlaczyc przycisk START
+            startButton["state"] = "active" 
+
+            #ubic polaczenie VPN
+            proc.terminate()
+            print("Wylaczam")
+        
+        
 
         tomlFileOpen.close()
 
