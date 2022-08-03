@@ -308,7 +308,7 @@ if __name__ == '__main__':
             
         
 
-        #main_folder_execute(toml)
+        main_folder_execute(toml)
 
         #zamykamy VPN
         if vpnCheckButtonValue.get():
@@ -352,15 +352,16 @@ if __name__ == '__main__':
     #elementy okna definicje
     fileListComboBOx = ttk.Combobox(mainWindow, values = glob.glob("config\*.toml"))    
     fileListComboBOx.set("Choose")
-    startButton = Button(mainWindow, text="Start", command = start_button)
+    startButton = ttk.Button(mainWindow, text="Start", command = start_button)
     mainText = Text(mainWindow, height = 300, width = 300)
-    vpnCheckButton = Checkbutton(mainWindow, text="Connect to VPN", variable = vpnCheckButtonValue, onvalue = 1, offvalue = 0, command = turnVpnButton)
+    vpnCheckButton = ttk.Checkbutton(mainWindow, text="Connect to VPN", variable = vpnCheckButtonValue, onvalue = 1, offvalue = 0, command = turnVpnButton)
 
     #elemty okna inicjacja
     fileListComboBOx.pack()
     startButton.pack()
     vpnCheckButton.pack()
     mainText.pack()
+    
     
 
     mainWindow.mainloop()
