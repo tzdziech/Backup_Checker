@@ -1,4 +1,5 @@
 company = "Słodkie Upominki"
+short_name = "su"
 pathtype = "network"
 veeam = "yes"
 sql = "yes"

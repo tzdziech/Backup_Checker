@@ -1,4 +1,5 @@
 company = "Tomasz Zdziech"
+short_name = "asc"
 pathtype = "local"
 veeam = "yes"
 sql = "yes"

@@ -1,4 +1,5 @@
 company = "MOREX"
+short_name = "morex"
 pathtype = "network"
 veeam = "yes"
 sql = "yes"

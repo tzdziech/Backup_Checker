@@ -1,12 +1,9 @@
 from sys import path
-from numpy import False_
-#from tkinter.tix import DirList
-from pip import main
-from tkinter import *
-import FileList as fl
-from tkinter import ttk
+from tkinter import * # GUI
+import FileList as fl #moja class
+from tkinter import ttk #GUI
 import glob
-import tomli
+import tomli #obsluga plikow .toml
 import os
 import shutil
 from datetime import datetime, date
@@ -36,6 +33,7 @@ if __name__ == '__main__':
     veeamExtension = ".vrb" # reverse incremental
     veeamFullExtension = ".vbk" #pelny
     veeamIncExtension = ".vib" # incremental
+    openVpnPath = "C:\\Program Files\\OpenVPN\\bin\\openvpn.exe" #sciezka do pliku openvpn.exe
     
 
     main_list = fl.FileList("") #jesli folder sieciowy to podwoje backslashe \\\\Desktop-sj7tn1k\\wii\\
@@ -67,22 +65,29 @@ if __name__ == '__main__':
     def analyze_vpn_log(file):
         desiredString = "Initialization Sequence Completed"
         unnecessaryString = "AUTH: Received control message: AUTH_FAILED"
+        no_config_file_string = "Error opening configuration file:"
+        no_credentials_file = "WARNING: cannot stat file"
         unknownError = "Unknown Error"
         for line in file:
-            print(line)            
+            #print(line)            
             if desiredString in line:
                 print("Znaleziono potwierdzenie polaczenia:", line)
-                break
+                return True
             elif unnecessaryString in line:
                 print("znaleziono: blad audentykacji:", line)
-                break
+                return False
+            elif no_config_file_string in line:
+                print("Nie znaleziono pliku konfiguracyjnego VPN:", line)
+                return False
+            elif no_credentials_file in line:
+                print("Nie znaleziono pliku z danymi logowania VPN:", line)
+                return False
             elif unknownError in line:
                 print("")
-            else:
-                print("nie znaleziono zadnego poszukiwanego komunikatu")
+            
 
 
-        return True
+        return False
 
     def turnVpnButton():
         if vpnCheckButtonValue.get(): print("VPN enabled", vpnCheckButtonValue.get())
@@ -274,16 +279,16 @@ if __name__ == '__main__':
         #wgranie pliku .toml
         tomlFileOpen = open(tomlFileName, mode="rb")
         toml = tomli.load(tomlFileOpen)
+        tomlFileOpen.close()
 
         
         #odpalamy VPN
-        if vpnCheckButtonValue.get():
+        if vpnCheckButtonValue.get() and 'short_name' in toml:
             #na czas laczenia VPN wylaczyc przycisk START
             startButton["state"] = "disabled" 
             
-            #polaczenie VPN
-            openVpnPath = "C:\\Program Files\\OpenVPN\\bin\\openvpn.exe"
-            vpnCompanyName = "morex" #bedzie brane z .toml
+            #polaczenie VPN            
+            vpnCompanyName = toml["short_name"] 
             vpnCompanyFile = f"vpn\{vpnCompanyName}.ovpn"
             vpnCompanyCred = f"vpn\{vpnCompanyName}.txt"
             command = [openVpnPath, "--config", vpnCompanyFile, "--auth-user-pass", vpnCompanyCred]
@@ -292,37 +297,44 @@ if __name__ == '__main__':
             
             #sprawdzamy czy sie zakonczyl pomyslnie                        
             print("przed")
-            vpnState = False
-            while not vpnState:
-                print("petla")
-                time.sleep(10)
-                #log z polaczenia VPN
-                file = open('vpnlog\output.txt', 'r')
-                #tu jakies sprawdzanie danych z LOGA
+            vpn_state = False
+            vpn_connection_trys = 0
+            while not vpn_state:
+                #print("petla")
+                time.sleep(5)
+                
+                file = open('vpnlog\output.txt', 'r') #log z polaczenia VPN
                 # if log == ok: vpnState = True
                 if analyze_vpn_log(file): 
                     print("POLACZONO!!!!")
-                    vpnState = True                               
+                    vpn_state = True
+                else: vpn_connection_trys += 1            
+
+                if vpn_connection_trys > 3:
+                    print("nie udalo sie odczytac z loga VPN stanu polaczenia po 3 probach (3 x 10s), spadam")    
+                    vpn_state = FALSE         
+                    break
                         
             print("po")
+        else: print("W pliku toml brak danych do polaczenie VPN lub nie wybrano polaczenia VPN w GUI!")
             
         
-
-        main_folder_execute(toml)
+        # jesli bylo wybrane polaczenie VPN a nie udalo sie polaczyc to powinno zostac ominiete
+        if vpnCheckButtonValue.get() and vpn_state:
+            main_folder_execute(toml)
+        elif not vpnCheckButtonValue.get(): #nie wybrano przycisku
+            main_folder_execute(toml)
+        else:
+            print("Wyszukiwanie przerwane z powodu problemu z polaczeniem VPN / lub inny warunek bledny")
 
         #zamykamy VPN
-        if vpnCheckButtonValue.get():
-        
+        if vpnCheckButtonValue.get() and 'short_name' in toml:        
             #wlaczyc przycisk START
             startButton["state"] = "active" 
-
             #ubic polaczenie VPN
             proc.terminate()
-            print("Wylaczam")
-        
-        
-
-        tomlFileOpen.close()
+            print("Wylaczam")        
+               
 
         day = datetime.today()
         logfilepath = f"log\{toml['company']} %s.txt" %day.strftime(" %d.%m.%Y %H.%M.%S")
@@ -330,17 +342,6 @@ if __name__ == '__main__':
         logfile.write(mainText.get("1.0", "end"))
         logfile.close()
 
-        
-                                  
-
-    #inicjacja glownego okna
-    #getting screen width and height of display
-    #width = mainWindow.winfo_screenwidth()
-    #height= mainWindow.winfo_screenheight()
-    #setting tkinter window size
-    #mainWindow.geometry("%dx%d" % (width, height-40))
-    #mainWindow.geometry("1920x1000")
-    #mainWindow.attributes('-zoomed', True)
 
     mainWindow.state('zoomed')
         
