@@ -99,7 +99,6 @@ if __name__ == '__main__':
 
 
     def check_backup_age(date):
-        #sprawdzamy czy backup nie jest starszy niz XXXXXX dni
         zmienna = datetime.fromtimestamp(float(date)) #zamienie numpy_str na float a potem na datetime zeby bylo mozna porownac daty
         timer = datetime.now() - zmienna
         if timer.days > 7:
@@ -173,8 +172,7 @@ if __name__ == '__main__':
             - czy wogole znaleziono PLIKI!!!
 
         """
-    def sub_folder_execute_veeam(path: str) -> None:
-        
+    def sub_folder_execute_veeam(path: str) -> None:        
         fileList = fl.FileList(path)
         error_message = ""
               	
@@ -194,8 +192,7 @@ if __name__ == '__main__':
         file_info = fileList.find_newest(veeamFullExtension)
         if file_info: 
             file_day = time.strftime("%d.%m.%Y %H:%M", time.localtime(float(file_info['date'])))
-            print_to_maintext(f"{file_day}	{file_info['size']} 	")
-            #print_to_maintext(file_day, file_info['size'],"(", file_info['file'],")	",  , True)
+            print_to_maintext(f"{file_day}	{file_info['size']} 	")            
             	
         # Data ostatniego wykonanego backupu	
         file2_info = fileList.find_newest(veeamExtension)
@@ -241,7 +238,7 @@ if __name__ == '__main__':
     def main_folder_execute(toml):      
         
         if toml['sql'] == "yes":
-            print_to_maintext(f"****************************************************", True)
+            print_to_maintext("****************************************************", True)
             print_to_maintext(f"Szukamy backupow SQL {toml['spath']}", True)
             print_to_maintext(f"Klient {toml['company']}", True)
             print_to_maintext("Data	Wykonujący kontrolę	Status	Rozmiar pliku BAK	Data ostatniego backupu 	Wolne miejsce w repozytorium 	Uwagi", True)
