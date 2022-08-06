@@ -1,3 +1,7 @@
+""" Autor: Tomasz Zdziech
+    Backup Checker Project
+"""
+
 from sys import path
 from tkinter import * # GUI
 import FileList as fl #moja class
@@ -41,6 +45,9 @@ if __name__ == '__main__':
 
     mainWindow = Tk()
     vpnCheckButtonValue = IntVar() # VPN check button value
+    sendEmailButtonValue = IntVar()
+    writeLogButtonValue = IntVar()
+
     sv_ttk.set_theme("dark")  # Set light theme
 
     """
@@ -89,10 +96,19 @@ if __name__ == '__main__':
 
         return False
 
-    def turnVpnButton():
-        if vpnCheckButtonValue.get(): print("VPN enabled", vpnCheckButtonValue.get())
-        else: print("VPN disabled", vpnCheckButtonValue.get())
+    def turnVpn():
+        if vpnCheckButtonValue.get(): print("VPN enabled, status: ", vpnCheckButtonValue.get())
+        else: print("VPN disabled, status: ", vpnCheckButtonValue.get())
     
+    def sendEmail():
+        if sendEmailButtonValue.get(): print("Sending email enabled, status: ", sendEmailButtonValue.get())
+        else: print("Sending email disabled, status: ", sendEmailButtonValue.get())
+
+    def writeLog():
+        if writeLogButtonValue.get(): print("Writing log enabled, status: ", writeLogButtonValue.get())
+        else: print("Writing log, status: ", writeLogButtonValue.get())
+
+
     def print_to_maintext(mstring: str, nl=False):
         mainText.insert(END, mstring)
         if nl: mainText.insert(END, "\n")
@@ -351,14 +367,18 @@ if __name__ == '__main__':
     fileListComboBOx = ttk.Combobox(mainWindow, values = glob.glob("config\*.toml"))    
     fileListComboBOx.set("Choose")
     startButton = ttk.Button(mainWindow, text="Start", command = start_button)
-    mainText = Text(mainWindow, height = 300, width = 300)
-    vpnCheckButton = ttk.Checkbutton(mainWindow, text="Connect to VPN", variable = vpnCheckButtonValue, onvalue = 1, offvalue = 0, command = turnVpnButton)
+    mainText = Text(mainWindow, height = 300, width = 300, borderwidth=10)
+    vpnCheckButton = ttk.Checkbutton(mainWindow, text="Connect to VPN?", variable = vpnCheckButtonValue, onvalue = 1, offvalue = 0, command = turnVpn)
+    sendEmailButton = ttk.Checkbutton(mainWindow, text="Send result with Email?", variable = sendEmailButtonValue, onvalue = 1, offvalue = 0, command = sendEmail)
+    writeLogButton = ttk.Checkbutton(mainWindow, text="Write result to log file?", variable = writeLogButtonValue, onvalue = 1, offvalue = 0, command = writeLog)
 
     #elemty okna inicjacja
-    fileListComboBOx.pack()
-    startButton.pack()
-    vpnCheckButton.pack()
-    mainText.pack()
+    fileListComboBOx.place(relx=0 , rely=0, relwidth=0.5, anchor="nw")
+    startButton.place(relx=0.5 , rely=0, relwidth=0.15, anchor="nw")
+    vpnCheckButton.place(relx=0 , rely=0.04, relwidth=0.15, anchor="nw")
+    sendEmailButton.place(relx=0 , rely=0.08, relwidth=0.15, anchor="nw")
+    writeLogButton.place(relx=0 , rely=0.12, relwidth=0.15, anchor="nw")
+    mainText.place(relx=0.15 , rely=0.04, relwidth=0.8, anchor="nw")
     
     
 
