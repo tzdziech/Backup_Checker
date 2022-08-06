@@ -348,13 +348,25 @@ if __name__ == '__main__':
             proc.terminate()
             print("Wylaczam")        
                
+        #saving log file (if checked)       
+        if writeLogButtonValue.get():            
+            day = datetime.today()
+            logfilepath = f"log\{toml['company']} %s.txt" %day.strftime(" %d.%m.%Y %H.%M.%S")
+            logfile = open(logfilepath, mode="w")
+            logfile.write(mainText.get("1.0", "end"))
+            logfile.close()
+            print("Zapisano log: ", logfilepath)
+        else:
+            print("Log nie zapisany z wyboru")
 
-        day = datetime.today()
-        logfilepath = f"log\{toml['company']} %s.txt" %day.strftime(" %d.%m.%Y %H.%M.%S")
-        logfile = open(logfilepath, mode="w")
-        logfile.write(mainText.get("1.0", "end"))
-        logfile.close()
+        #sending email (if checked)
+        if sendEmailButtonValue.get():
+            print("Wyslano email")
+        else:
+            print("Email nei wyslany z wyboru")
 
+###############################################################################
+############End of Functions definitions#######################################
 
     mainWindow.state('zoomed')
         
