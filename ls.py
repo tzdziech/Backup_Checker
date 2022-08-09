@@ -14,6 +14,7 @@ from datetime import datetime, date
 import time
 import sv_ttk #sun valey tkinter theme
 import subprocess #podproces do polaczenia VPN
+import sendemail
 
 """ 
 Format raportów:
@@ -348,10 +349,10 @@ if __name__ == '__main__':
             proc.terminate()
             print("Wylaczam")        
                
+        day = datetime.today()
+        logfilepath = f"log\{toml['company']} %s.txt" %day.strftime(" %d.%m.%Y %H.%M.%S")
         #saving log file (if checked)       
-        if writeLogButtonValue.get():            
-            day = datetime.today()
-            logfilepath = f"log\{toml['company']} %s.txt" %day.strftime(" %d.%m.%Y %H.%M.%S")
+        if writeLogButtonValue.get():                   
             logfile = open(logfilepath, mode="w")
             logfile.write(mainText.get("1.0", "end"))
             logfile.close()
@@ -361,7 +362,14 @@ if __name__ == '__main__':
 
         #sending email (if checked)
         if sendEmailButtonValue.get():
-            print("Wyslano email")
+            emails = ["tzdziech@gmail.com", ""]
+            cc_emails = [""]
+            bcc_emails = [""]
+            
+            subject = f"Raport dla firmy: {toml['company']} z dnia: %s" %day.strftime(" %d.%m.%Y %H.%M.%S")
+            body_text = "Szczegoly w zalaczniku"
+            sendemail.send_email_with_attachment(subject, body_text, emails, cc_emails, bcc_emails, logfilepath)
+            #print("Wyslano email")
         else:
             print("Email nei wyslany z wyboru")
 
